@@ -26,14 +26,15 @@ SOFTWARE.
 package gifer
 
 import (
-	"github.com/songtianyi/laosj/spider"
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"net/url"
 	"time"
+
+	"github.com/songtianyi/laosj/spider"
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/yinanrong/wechat-go/wxweb"
 )
 
 // Register plugin

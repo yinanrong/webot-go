@@ -1,22 +1,23 @@
 package main
 
 import (
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/cleaner"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/faceplusplus"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/forwarder"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/gifer"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/joker"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/laosj"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/replier"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/revoker"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/share"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/switcher"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/system"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/verify"
-	"github.com/songtianyi/wechat-go/plugins/wxweb/youdao"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"time"
+
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/cleaner"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/faceplusplus"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/forwarder"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/gifer"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/joker"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/laosj"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/replier"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/revoker"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/share"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/switcher"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/system"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/verify"
+	"github.com/yinanrong/wechat-go/plugins/wxweb/youdao"
+	"github.com/yinanrong/wechat-go/wxweb"
 )
 
 func main() {

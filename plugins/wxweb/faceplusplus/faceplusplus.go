@@ -27,15 +27,16 @@ package faceplusplus
 
 import (
 	"bytes"
-	"github.com/songtianyi/rrframework/config"
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
 	"net/http"
 	"strconv"
 	"strings"
+
+	"github.com/songtianyi/rrframework/config"
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/yinanrong/wechat-go/wxweb"
 )
 
 const (

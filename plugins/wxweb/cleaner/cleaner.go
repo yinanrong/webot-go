@@ -27,10 +27,11 @@ package cleaner
 
 import (
 	"fmt"
-	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb"
 	"math"
 	"strings"
+
+	"github.com/songtianyi/rrframework/logs"
+	"github.com/yinanrong/wechat-go/wxweb"
 )
 
 // Register plugin

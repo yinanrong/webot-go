@@ -27,7 +27,7 @@ package replier
 
 import (
 	"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb"
+	"github.com/yinanrong/wechat-go/wxweb"
 )
 
 // register plugin

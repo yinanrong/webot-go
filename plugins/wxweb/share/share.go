@@ -27,8 +27,9 @@ package share // 以插件名命令包名
 
 import (
 	//"github.com/songtianyi/rrframework/logs"
-	"github.com/songtianyi/wechat-go/wxweb" // 导入协议包
 	"strings"
+
+	"github.com/yinanrong/wechat-go/wxweb" // 导入协议包
 )
 
 // Register plugin

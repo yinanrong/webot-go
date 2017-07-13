@@ -30,7 +30,6 @@ import (
 	"encoding/json"
 	"encoding/xml"
 	"fmt"
-	"github.com/songtianyi/rrframework/config"
 	"io"
 	"io/ioutil"
 	"mime/multipart"
@@ -42,6 +41,8 @@ import (
 	"strings"
 	"sync/atomic"
 	"time"
+
+	"github.com/songtianyi/rrframework/config"
 )
 
 // JsLogin: jslogin api
@@ -734,7 +735,7 @@ func WebWxBatchGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return body, nil
 }
 
-// WebWxVerifyUser: webwxverifyuser api
+// WebWxVerifyUser api
 func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opcode int, verifyContent string, vul []*VerifyUser) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -777,7 +778,7 @@ func WebWxVerifyUser(common *Common, ce *XmlConfig, cookies []*http.Cookie, opco
 	return body, nil
 }
 
-// WebWxCreateChatroom: webwxcreatechatroom api
+// WebWxCreateChatroom    api
 func WebWxCreateChatroom(common *Common, ce *XmlConfig, cookies []*http.Cookie, users []*User, topic string) (interface{}, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))

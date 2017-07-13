@@ -27,8 +27,10 @@ package cleaner
 
 import (
 	"fmt"
-	"math"
+	"math/rand"
 	"strings"
+
+	"time"
 
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/yinanrong/wechat-go/wxweb"
@@ -53,15 +55,16 @@ func listenCmd(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 	for _, v := range users {
 		fmt.Println(v.NickName)
 	}
-	max := 25
-	for i := range users {
-		if i%max == 0 {
-			b, err := wxweb.WebWxCreateChatroom(session.WxWebCommon, session.WxWebXcg, session.Cookies, users[i:int(math.Max(float64(i+max), float64(len(users))))], "test")
-			if err != nil {
-				logs.Error(err)
-				return
-			}
-			logs.Debug(string(b.([]byte)))
-		}
+	l := len(users)
+	if l <= 0 {
+		return
 	}
+	r := rand.New(rand.NewSource(time.Now().Unix()))
+	u := users[r.Intn(1):]
+	b, err := wxweb.WebWxCreateChatroom(session.WxWebCommon, session.WxWebXcg, session.Cookies, u, fmt.Sprintf("room-%d", len(u)))
+	if err != nil {
+		logs.Error(err)
+		return
+	}
+	logs.Debug(string(b.([]byte)))
 }

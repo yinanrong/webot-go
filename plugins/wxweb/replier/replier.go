@@ -26,6 +26,14 @@ SOFTWARE.
 package replier
 
 import (
+	"net/http"
+
+	"io/ioutil"
+
+	"fmt"
+
+	"encoding/json"
+
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/yinanrong/wechat-go/wxweb"
 )
@@ -39,7 +47,30 @@ func Register(session *wxweb.Session) {
 
 }
 func autoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
-	if !msg.IsGroup {
-		session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
+	url := fmt.Sprintf("http://api.qingyunke.com/api.php?key=free&appid=0&msg=%s", msg.Content)
+	resp, err := http.Get(url)
+	if err != nil {
+		logs.Error(err.Error())
+		return
 	}
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	var r replay
+	err = json.Unmarshal(body, &r)
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	session.SendText(r.Content, session.Bot.UserName, msg.FromUserName)
+	// if !msg.IsGroup {
+	// 	session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
+	// }
+}
+
+type replay struct {
+	Result  int    `json:"result"`
+	Content string `json:"content"`
 }

@@ -45,7 +45,7 @@ import (
 	"github.com/songtianyi/rrframework/config"
 )
 
-// JsLogin: jslogin api
+// JsLogin api
 func JsLogin(common *Common) (string, error) {
 	km := url.Values{}
 	km.Add("appid", common.AppId)
@@ -72,7 +72,7 @@ func JsLogin(common *Common) (string, error) {
 	return ss[1], nil
 }
 
-// QrCode: get qrcode
+// QrCode  qrcode
 func QrCode(common *Common, uuid string) ([]byte, error) {
 	km := url.Values{}
 	km.Add("t", "webwx")
@@ -87,7 +87,7 @@ func QrCode(common *Common, uuid string) ([]byte, error) {
 	return body, nil
 }
 
-// Login: login api
+// Login  api
 func Login(common *Common, uuid, tip string) (string, error) {
 	km := url.Values{}
 	km.Add("tip", tip)
@@ -109,12 +109,11 @@ func Login(common *Common, uuid, tip string) (string, error) {
 			return "", fmt.Errorf("parse redirect_uri fail, %s", strb)
 		}
 		return ss[1], nil
-	} else {
-		return "", fmt.Errorf("login response, %s", strb)
 	}
+	return "", fmt.Errorf("login response, %s", strb)
 }
 
-// WebNewLoginPage: webwxnewloginpage api
+// WebNewLoginPage api
 func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie, error) {
 	u, _ := url.Parse(uri)
 	km := u.Query()
@@ -135,7 +134,7 @@ func WebNewLoginPage(common *Common, xc *XmlConfig, uri string) ([]*http.Cookie,
 	return resp.Cookies(), nil
 }
 
-// WebWxInit: webwxinit api
+// WebWxInit api
 func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -168,7 +167,7 @@ func WebWxInit(common *Common, ce *XmlConfig) ([]byte, error) {
 	return body, nil
 }
 
-// SyncCheck: synccheck api
+// SyncCheck  api
 func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	server string, skl *SyncKeyList) (int, int, error) {
 	km := url.Values{}
@@ -218,7 +217,7 @@ func SyncCheck(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return retcode, selector, nil
 }
 
-// WebWxSync: webwxsync api
+// WebWxSync api
 func WebWxSync(common *Common,
 	ce *XmlConfig,
 	cookies []*http.Cookie,
@@ -280,7 +279,7 @@ func WebWxSync(common *Common,
 	return nil
 }
 
-// WebWxStatusNotify: webwxstatusnotify api
+// WebWxStatusNotify api
 func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 	km := url.Values{}
 	km.Add("pass_ticket", ce.PassTicket)
@@ -317,7 +316,7 @@ func WebWxStatusNotify(common *Common, ce *XmlConfig, bot *User) (int, error) {
 	return ret, nil
 }
 
-// WebWxGetContact: webwxgetcontact api
+// WebWxGetContact  api
 func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]byte, error) {
 	km := url.Values{}
 	km.Add("r", strconv.FormatInt(time.Now().Unix(), 10))
@@ -355,7 +354,7 @@ func WebWxGetContact(common *Common, ce *XmlConfig, cookies []*http.Cookie) ([]b
 	return body, nil
 }
 
-// WebWxSendMsg: webwxsendmsg api
+// WebWxSendMsg  api
 func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	from, to string, msg string) ([]byte, error) {
 
@@ -402,7 +401,7 @@ func WebWxSendMsg(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	return body, nil
 }
 
-// WebWxUploadMedia: webwxuploadmedia api
+// WebWxUploadMedia  api
 func WebWxUploadMedia(common *Common, ce *XmlConfig, cookies []*http.Cookie,
 	filename string, content []byte) (string, error) {
 

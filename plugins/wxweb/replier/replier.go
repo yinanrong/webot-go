@@ -32,13 +32,12 @@ import (
 
 	"fmt"
 
-	"encoding/json"
-
+	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
 	"github.com/yinanrong/wechat-go/wxweb"
 )
 
-// register plugin
+// Register plugin
 func Register(session *wxweb.Session) {
 	session.HandlerRegister.Add(wxweb.MSG_TEXT, wxweb.Handler(autoReply), "text-replier")
 	if err := session.HandlerRegister.Add(wxweb.MSG_IMG, wxweb.Handler(autoReply), "img-replier"); err != nil {
@@ -58,19 +57,15 @@ func autoReply(session *wxweb.Session, msg *wxweb.ReceivedMessage) {
 		logs.Error(err.Error())
 		return
 	}
-	var r replay
-	err = json.Unmarshal(body, &r)
+	jc, err := rrconfig.LoadJsonConfigFromBytes(body)
 	if err != nil {
 		logs.Error(err.Error())
 		return
 	}
-	session.SendText(r.Content, session.Bot.UserName, msg.FromUserName)
-	// if !msg.IsGroup {
-	// 	session.SendText("暂时不在，稍后回复", session.Bot.UserName, msg.FromUserName)
-	// }
-}
-
-type replay struct {
-	Result  int    `json:"result"`
-	Content string `json:"content"`
+	content, err := jc.GetString("Content")
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	session.SendText(content, session.Bot.UserName, msg.FromUserName)
 }

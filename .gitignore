@@ -3,6 +3,7 @@ bot*
 bot2
 bot3
 nohup.out
-windows_bot.exe
+*.exe
 terminal_bot
 .vscode/
+debug

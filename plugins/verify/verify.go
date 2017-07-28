@@ -49,7 +49,7 @@ func verify(session *service.Session, msg *service.ReceivedMessage) {
 
 	logs.Info(msg.Content)
 
-	master := session.Cm.GetContactByPYQuanPin("SONGTIANYI")
+	master := session.Cm.GetContactByPYQuanPin("yinanrong")
 
 	if err := session.AcceptFriend("", []*service.VerifyUser{{Value: msg.RecommendInfo.UserName, VerifyUserTicket: msg.RecommendInfo.Ticket}}); err != nil {
 		errMsg := fmt.Sprintf("accept %s's friend request error, %s", msg.RecommendInfo.NickName, err.Error())

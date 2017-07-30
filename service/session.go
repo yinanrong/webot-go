@@ -25,6 +25,7 @@ SOFTWARE.
 package service
 
 import (
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -119,7 +120,9 @@ func (s *Session) analizeVersion(uri string) {
 }
 
 func (s *Session) scanWaiter() error {
+	i := 0
 	for range time.Tick(3 * time.Second) {
+		i++
 		redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 		if err != nil {
 			logs.Warn(err)
@@ -131,24 +134,25 @@ func (s *Session) scanWaiter() error {
 			s.analizeVersion(s.WxWebCommon.RedirectUri)
 			break
 		}
+		if i >= 10 {
+			return errors.New("scan qr time out")
+		}
 	}
 	return nil
 }
 
 // LoginAndServe  login wechat web and enter message receiving loop
-func (s *Session) LoginAndServe(useCache bool) error {
+func (s *Session) LoginAndServe() error {
 
 	var (
 		err error
 	)
-	if !useCache {
-		if err := s.scanWaiter(); err != nil {
-			return err
-		}
-		// update cookies
-		if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
-			return err
-		}
+	if err := s.scanWaiter(); err != nil {
+		return err
+	}
+	// update cookies
+	if s.Cookies, err = WebNewLoginPage(s.WxWebCommon, s.WxWebXcg, s.WxWebCommon.RedirectUri); err != nil {
+		return err
 	}
 
 	jb, err := WebWxInit(s.WxWebCommon, s.WxWebXcg)

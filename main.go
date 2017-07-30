@@ -36,9 +36,10 @@ func apiService(sesChan chan<- (*service.Session)) {
 			return
 		}
 		sesChan <- session
+		w.Header().Set("Content-Type", "image/jpeg")
 		w.Write(qr)
 	})
-	http.ListenAndServe(":1989", nil)
+	http.ListenAndServe("0.0.0.0:5001", nil)
 }
 
 func backService(session *service.Session) {
@@ -54,7 +55,7 @@ func backService(session *service.Session) {
 	session.HandlerRegister.EnableByName("system-withdraw")
 	session.HandlerRegister.EnableByName("verify")
 
-	if session.LoginAndServe(false) != nil {
+	if session.LoginAndServe() != nil {
 		logs.Info("closed by user")
 	}
 }

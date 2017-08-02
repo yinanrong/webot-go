@@ -14,16 +14,16 @@ import (
 
 func main() {
 
-	sesChan := make(chan (*service.Session), 100)
+	sessChan := make(chan (*service.Session), 100)
 
-	go apiService(sesChan)
+	go apiService(sessChan)
 
-	for s := range sesChan {
+	for s := range sessChan {
 		go backService(s)
 	}
-	select {}
+	close(sessChan)
 }
-func apiService(sesChan chan<- (*service.Session)) {
+func apiService(sessChan chan<- *service.Session) {
 	http.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
 		session, err := service.CreateSession(nil, nil)
 		if err != nil {
@@ -35,9 +35,9 @@ func apiService(sesChan chan<- (*service.Session)) {
 			logs.Error(err)
 			return
 		}
-		sesChan <- session
 		w.Header().Set("Content-Type", "image/jpeg")
 		w.Write(qr)
+		sessChan <- session
 	})
 	http.ListenAndServe("0.0.0.0:5001", nil)
 }

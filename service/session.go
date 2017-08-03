@@ -25,7 +25,6 @@ SOFTWARE.
 package service
 
 import (
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -98,7 +97,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister) (*Session, 
 	return session, nil
 }
 
-//GenerateQR generate QRCode fof current session
+//GenerateQR generate QRCode for current session
 func (s *Session) GenerateQR() ([]byte, error) {
 	return QrCode(s.WxWebCommon, s.QrcodeUUID)
 }
@@ -120,22 +119,17 @@ func (s *Session) analizeVersion(uri string) {
 }
 
 func (s *Session) scanWaiter() error {
-	i := 0
 	for range time.Tick(3 * time.Second) {
-		i++
 		redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
 		if err != nil {
-			logs.Warn(err)
 			if strings.Contains(err.Error(), "window.code=408") {
 				return err
 			}
+			logs.Warn(err)
 		} else {
 			s.WxWebCommon.RedirectUri = redirectUri
 			s.analizeVersion(s.WxWebCommon.RedirectUri)
 			break
-		}
-		if i >= 10 {
-			return errors.New("scan qr time out")
 		}
 	}
 	return nil
@@ -214,7 +208,6 @@ func (s *Session) serve() error {
 	}
 }
 func (s *Session) producer(msg chan []byte, errChan chan error) {
-	logs.Info("entering synccheck loop")
 	for {
 		ret, sel, err := SyncCheck(s.WxWebCommon, s.WxWebXcg, s.Cookies, s.WxWebCommon.SyncSrv, s.SynKeyList)
 		logs.Info(s.WxWebCommon.SyncSrv, ret, sel)

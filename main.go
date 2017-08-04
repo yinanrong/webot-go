@@ -2,6 +2,8 @@ package main
 
 import (
 	"net/http"
+	"strconv"
+	"time"
 	"webot-go/plugins/replier"
 	"webot-go/plugins/switcher"
 	"webot-go/plugins/system"
@@ -14,17 +16,26 @@ import (
 )
 
 func main() {
-
+	sessMap := make(map[string]*service.Session)
 	sessChan := make(chan (*service.Session), 100)
+	go apiService(sessChan, sessMap)
 
-	go apiService(sessChan)
+	go func() {
+		for range time.Tick(time.Hour) {
+			for uuid, session := range sessMap {
+				if session.State == service.Timeout || session.State == service.Failed {
+					delete(sessMap, uuid)
+				}
+			}
+		}
+	}()
 
-	for s := range sessChan {
-		go backService(s)
+	for session := range sessChan {
+		go backService(session, sessMap)
 	}
 	close(sessChan)
 }
-func apiService(sessChan chan<- *service.Session) {
+func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Session) {
 	r := mux.NewRouter()
 	r.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
 		session, err := service.CreateSession(nil, nil)
@@ -38,18 +49,21 @@ func apiService(sessChan chan<- *service.Session) {
 			return
 		}
 		sessChan <- session
+		sessMap[session.ID] = session
 		w.Write(qr)
 	}).Methods("GET")
 	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		if uuid, ok := vars["uuid"]; ok {
-			w.Write([]byte(uuid))
+			if session, ok := sessMap[uuid]; ok {
+				w.Write([]byte(strconv.Itoa(session.State)))
+			}
 		}
 	}).Methods("GET")
 	http.ListenAndServe(":5001", r)
 }
 
-func backService(session *service.Session) {
+func backService(session *service.Session, sessMap map[string]*service.Session) {
 	switcher.Register(session)
 	replier.Register(session)
 	system.Register(session)

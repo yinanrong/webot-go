@@ -29,11 +29,20 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
 	"github.com/songtianyi/rrframework/config"
 	"github.com/songtianyi/rrframework/logs"
+)
+
+const (
+	Creating  = 0
+	Waiting   = 201
+	Succeeded = 200
+	Timeout   = 408
+	Failed    = 500
 )
 
 var (
@@ -58,9 +67,10 @@ type Session struct {
 	SynKeyList      *SyncKeyList
 	Bot             *User
 	Cm              *ContactManager
-	QrcodeUUID      string //uuid
+	ID              string
 	HandlerRegister *HandlerRegister
 	CreateTime      int64
+	State           int
 }
 
 // CreateSession  create wechat bot session
@@ -82,7 +92,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister) (*Session, 
 	session := &Session{
 		WxWebCommon: common,
 		WxWebXcg:    wxWebXcg,
-		QrcodeUUID:  uuid,
+		ID:          uuid,
 		CreateTime:  time.Now().Unix(),
 	}
 
@@ -99,7 +109,7 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister) (*Session, 
 
 //GenerateQR generate QRCode for current session
 func (s *Session) GenerateQR() ([]byte, error) {
-	return QrCode(s.WxWebCommon, s.QrcodeUUID)
+	return QrCode(s.WxWebCommon, s.ID)
 }
 
 func (s *Session) analizeVersion(uri string) {
@@ -120,13 +130,19 @@ func (s *Session) analizeVersion(uri string) {
 
 func (s *Session) scanWaiter() error {
 	for range time.Tick(3 * time.Second) {
-		redirectUri, err := Login(s.WxWebCommon, s.QrcodeUUID, "0")
+		redirectUri, err := Login(s.WxWebCommon, s.ID, "0")
 		if err != nil {
-			if strings.Contains(err.Error(), "window.code=408") {
+			if strings.Contains(err.Error(), strconv.Itoa(Timeout)) {
+				s.State = Timeout
 				return err
+			} else if strings.Contains(err.Error(), strconv.Itoa(Waiting)) {
+				s.State = Waiting
+			} else {
+				s.State = Failed
 			}
 			logs.Warn(err)
 		} else {
+			s.State = Succeeded
 			s.WxWebCommon.RedirectUri = redirectUri
 			s.analizeVersion(s.WxWebCommon.RedirectUri)
 			break

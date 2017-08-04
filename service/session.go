@@ -43,6 +43,7 @@ const (
 	Succeeded = 200
 	Timeout   = 408
 	Failed    = 500
+	Closed    = 600
 )
 
 var (

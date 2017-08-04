@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -23,7 +25,7 @@ func main() {
 	go func() {
 		for range time.Tick(time.Hour) {
 			for uuid, session := range sessMap {
-				if session.State == service.Timeout || session.State == service.Failed {
+				if session.State == service.Closed {
 					delete(sessMap, uuid)
 				}
 			}
@@ -50,13 +52,17 @@ func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Se
 		}
 		sessChan <- session
 		sessMap[session.ID] = session
-		w.Write(qr)
+		w.Header().Add("Content-Type", "application/json")
+		base64Qr := base64.StdEncoding.EncodeToString(qr)
+		w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
 	}).Methods("GET")
 	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		if uuid, ok := vars["uuid"]; ok {
 			if session, ok := sessMap[uuid]; ok {
 				w.Write([]byte(strconv.Itoa(session.State)))
+			} else {
+				w.Write([]byte(strconv.Itoa(service.Closed)))
 			}
 		}
 	}).Methods("GET")
@@ -77,6 +83,8 @@ func backService(session *service.Session, sessMap map[string]*service.Session) 
 	session.HandlerRegister.EnableByName("verify")
 
 	if err := session.LoginAndServe(); err != nil {
-		logs.Error("session closed due to :%s", err.Error())
+		logs.Info("session closed due to :%s", err.Error())
+		time.Sleep(5 * time.Second)
+		session.State = service.Closed
 	}
 }

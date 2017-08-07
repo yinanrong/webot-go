@@ -31,11 +31,13 @@ func main() {
 			}
 		}
 	}()
-
-	for session := range sessChan {
-		go backService(session, sessMap)
-	}
-	close(sessChan)
+	go func() {
+		for session := range sessChan {
+			go backService(session, sessMap)
+		}
+		close(sessChan)
+	}()
+	select {}
 }
 func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Session) {
 	r := mux.NewRouter()

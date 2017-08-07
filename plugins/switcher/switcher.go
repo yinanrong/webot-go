@@ -26,7 +26,6 @@ SOFTWARE.
 package switcher
 
 import (
-	"fmt"
 	"strings"
 
 	"webot-go/service"
@@ -42,12 +41,11 @@ func Register(session *service.Session) {
 func switcher(session *service.Session, msg *service.ReceivedMessage) {
 	// contact filter
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
-	
+
 	if contact == nil {
 		logs.Error("no this contact, ignore", msg.FromUserName)
 		return
 	}
-
 	if contact.UserName != session.Bot.UserName {
 		session.SendText("hehe, too much you think. only @"+session.Bot.NickName+" can use this function", session.Bot.UserName, service.RealTargetUserName(session, msg))
 	}

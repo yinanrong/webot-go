@@ -26,6 +26,7 @@ SOFTWARE.
 package switcher
 
 import (
+	"fmt"
 	"strings"
 
 	"webot-go/service"
@@ -41,9 +42,14 @@ func Register(session *service.Session) {
 func switcher(session *service.Session, msg *service.ReceivedMessage) {
 	// contact filter
 	contact := session.Cm.GetContactByUserName(msg.FromUserName)
+	
 	if contact == nil {
 		logs.Error("no this contact, ignore", msg.FromUserName)
 		return
+	}
+
+	if contact.UserName != session.Bot.UserName {
+		session.SendText("hehe, too much you think. only @"+session.Bot.NickName+" can use this function", session.Bot.UserName, service.RealTargetUserName(session, msg))
 	}
 
 	if strings.ToLower(msg.Content) == "dump" {
@@ -61,7 +67,7 @@ func switcher(session *service.Session, msg *service.ReceivedMessage) {
 		return
 	}
 	if strings.ToLower(ss[1]) == "switcher" {
-		session.SendText("hehe, you think too much", session.Bot.UserName, service.RealTargetUserName(session, msg))
+		session.SendText("hehe,too much you think", session.Bot.UserName, service.RealTargetUserName(session, msg))
 		return
 	}
 

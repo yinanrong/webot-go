@@ -45,14 +45,6 @@ func Register(session *service.Session) {
 
 // 消息处理函数
 func youdao(session *service.Session, msg *service.ReceivedMessage) {
-
-	// 可选:避免此插件对未保存到通讯录的群生效 可以用contact manager来过滤
-	contact := session.Cm.GetContactByUserName(msg.FromUserName)
-	if contact == nil {
-		logs.Error("ignore the messages from", msg.FromUserName)
-		return
-	}
-
 	uri := "http://fanyi.youdao.com/openapi.do?keyfrom=go-aida&key=145986666&type=data&doctype=json&version=1.1&q=" + url.QueryEscape(msg.Content)
 	response, err := http.Get(uri)
 	if err != nil {
@@ -84,5 +76,5 @@ func youdao(session *service.Session, msg *service.ReceivedMessage) {
 		return
 	}
 
-	session.SendText(msg.At+trans[0], session.Bot.UserName, service.RealTargetUserName(session, msg))
+	session.SendText(msg.At+trans[0], session.Bot.UserName, msg.FromUserName)
 }

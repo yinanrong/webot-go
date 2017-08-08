@@ -1,9 +1,4 @@
-test
-bot*
-bot2
-bot3
-nohup.out
+debug
 *.exe
-terminal_bot
 .vscode/
 debug

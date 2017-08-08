@@ -29,8 +29,6 @@ import (
 	"strings"
 
 	"webot-go/service"
-
-	"github.com/songtianyi/rrframework/logs"
 )
 
 // Register plugin
@@ -39,19 +37,13 @@ func Register(session *service.Session) {
 }
 
 func switcher(session *service.Session, msg *service.ReceivedMessage) {
-	// contact filter
-	contact := session.Cm.GetContactByUserName(msg.FromUserName)
 
-	if contact == nil {
-		logs.Error("no this contact, ignore", msg.FromUserName)
+	if msg.FromUserName != session.Bot.UserName {
 		return
-	}
-	if contact.UserName != session.Bot.UserName {
-		session.SendText("hehe, too much you think. only @"+session.Bot.NickName+" can use this function", session.Bot.UserName, service.RealTargetUserName(session, msg))
 	}
 
 	if strings.ToLower(msg.Content) == "dump" {
-		session.SendText(session.HandlerRegister.Dump(), session.Bot.UserName, service.RealTargetUserName(session, msg))
+		session.SendText(session.HandlerRegister.Dump(), session.Bot.UserName, msg.FromUserName)
 		return
 	}
 
@@ -65,7 +57,7 @@ func switcher(session *service.Session, msg *service.ReceivedMessage) {
 		return
 	}
 	if strings.ToLower(ss[1]) == "switcher" {
-		session.SendText("hehe,too much you think", session.Bot.UserName, service.RealTargetUserName(session, msg))
+		session.SendText("hehe,too much you think", session.Bot.UserName, msg.FromUserName)
 		return
 	}
 
@@ -74,15 +66,15 @@ func switcher(session *service.Session, msg *service.ReceivedMessage) {
 	)
 	if strings.ToLower(ss[0]) == "enable" {
 		if err = session.HandlerRegister.EnableByName(ss[1]); err == nil {
-			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, service.RealTargetUserName(session, msg))
+			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, msg.FromUserName)
 		} else {
-			session.SendText(err.Error(), session.Bot.UserName, service.RealTargetUserName(session, msg))
+			session.SendText(err.Error(), session.Bot.UserName, msg.FromUserName)
 		}
 	} else if strings.ToLower(ss[0]) == "disable" {
 		if err = session.HandlerRegister.DisableByName(ss[1]); err == nil {
-			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, service.RealTargetUserName(session, msg))
+			session.SendText(msg.Content+" [DONE]", session.Bot.UserName, msg.FromUserName)
 		} else {
-			session.SendText(err.Error(), session.Bot.UserName, service.RealTargetUserName(session, msg))
+			session.SendText(err.Error(), session.Bot.UserName, msg.FromUserName)
 		}
 	}
 }

@@ -274,7 +274,7 @@ func (s *Session) consumer(msg []byte) {
 			logs.Warn("类型为%d的消息被忽略，消息内容:[%s]", rmsg.MsgType, rmsg.Content)
 			continue
 		}
-		err, handles := s.HandlerRegister.Get(rmsg.MsgType)
+		handles, err := s.HandlerRegister.Get(rmsg.MsgType)
 		if err != nil {
 			logs.Warn(err)
 			continue

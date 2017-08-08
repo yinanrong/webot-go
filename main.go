@@ -1,16 +1,11 @@
 package main
 
 import (
-	"encoding/base64"
-	"fmt"
 	"net/http"
 	"strconv"
 	"time"
 	"webot-go/plugins/replier"
-	"webot-go/plugins/switcher"
-	"webot-go/plugins/system"
 	"webot-go/plugins/verify"
-	"webot-go/plugins/youdao"
 	"webot-go/service"
 
 	"github.com/gorilla/mux"
@@ -54,9 +49,10 @@ func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Se
 		}
 		sessChan <- session
 		sessMap[session.ID] = session
-		w.Header().Add("Content-Type", "application/json")
-		base64Qr := base64.StdEncoding.EncodeToString(qr)
-		w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
+		// w.Header().Add("Content-Type", "application/json")
+		// base64Qr := base64.StdEncoding.EncodeToString(qr)
+		// w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
+		w.Write(qr)
 	}).Methods("GET")
 	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
@@ -72,18 +68,13 @@ func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Se
 }
 
 func backService(session *service.Session, sessMap map[string]*service.Session) {
-	switcher.Register(session)
 	replier.Register(session)
-	system.Register(session)
-	youdao.Register(session)
+	//youdao.Register(session)
 	verify.Register(session)
 
-	session.HandlerRegister.EnableByName("switcher")
-	session.HandlerRegister.EnableByName("youdao")
-	session.HandlerRegister.EnableByName("system-sys")
-	session.HandlerRegister.EnableByName("system-withdraw")
+	// session.HandlerRegister.EnableByName("youdao")
+	session.HandlerRegister.EnableByName("text-replier")
 	session.HandlerRegister.EnableByName("verify")
-
 	if err := session.LoginAndServe(); err != nil {
 		logs.Info("session closed due to :%s", err.Error())
 		time.Sleep(5 * time.Second)

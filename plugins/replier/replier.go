@@ -27,6 +27,8 @@ package replier
 
 import (
 	"net/http"
+	"net/url"
+	"strings"
 
 	"io/ioutil"
 
@@ -47,8 +49,8 @@ func Register(session *service.Session) {
 
 }
 func autoReply(session *service.Session, msg *service.ReceivedMessage) {
-	url := fmt.Sprintf("http://service.qingyunke.com/service.php?key=free&appid=0&msg=%s", msg.Content)
-	resp, err := http.Get(url)
+	uri := fmt.Sprintf("http://api.qingyunke.com/api.php?key=free&appid=0&msg=%s", url.QueryEscape(msg.Content))
+	resp, err := http.Get(uri)
 	if err != nil {
 		logs.Error(err.Error())
 		return
@@ -63,10 +65,10 @@ func autoReply(session *service.Session, msg *service.ReceivedMessage) {
 		logs.Error(err.Error())
 		return
 	}
-	content, err := jc.GetString("Content")
+	content, err := jc.GetString("content")
 	if err != nil {
 		logs.Error(err.Error())
 		return
 	}
-	session.SendText(content, session.Bot.UserName, msg.FromUserName)
+	session.SendText(strings.Replace(content, "{br}", "\n", -1), session.Bot.UserName, msg.FromUserName)
 }

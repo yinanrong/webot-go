@@ -100,13 +100,13 @@ func (hr *HandlerRegister) Add(key int, h Handler, name string) error {
 }
 
 // Get: get message handler
-func (hr *HandlerRegister) Get(key int) (error, []*HandlerWrapper) {
+func (hr *HandlerRegister) Get(key int) ([]*HandlerWrapper, error) {
 	hr.mu.RLock()
 	defer hr.mu.RUnlock()
 	if v, ok := hr.hmap[key]; ok {
-		return nil, v
+		return v, nil
 	}
-	return fmt.Errorf("handlers for key [%d] not registered", key), nil
+	return nil, fmt.Errorf("handlers for key [%d] not registered", key)
 }
 
 // GetAll: get all message handler
@@ -122,7 +122,7 @@ func (hr *HandlerRegister) GetAll() []*HandlerWrapper {
 
 // EnableByType: enable handler by message type
 func (hr *HandlerRegister) EnableByType(key int) error {
-	err, handles := hr.Get(key)
+	handles, err := hr.Get(key)
 	if err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (hr *HandlerRegister) EnableByType(key int) error {
 
 // DisableByType: disable handler by message type
 func (hr *HandlerRegister) DisableByType(key int) error {
-	err, handles := hr.Get(key)
+	handles, err := hr.Get(key)
 	if err != nil {
 		return err
 	}

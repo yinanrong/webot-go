@@ -270,6 +270,9 @@ type ReceivedMessage struct {
 	MsgType       int
 	OriginContent string
 	At            string
-
 	RecommendInfo *RecommendInfo
+}
+
+func (m *ReceivedMessage) IsBot(sess *Session) bool {
+	return m.FromUserName == sess.Bot.UserName
 }

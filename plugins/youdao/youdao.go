@@ -76,5 +76,5 @@ func youdao(session *service.Session, msg *service.ReceivedMessage) {
 		return
 	}
 
-	session.SendText(msg.At+trans[0], session.Bot.UserName, msg.FromUserName)
+	session.SendText(msg.At+trans[0], session.Bot.UserName, service.RealTargetUserName(session, msg))
 }

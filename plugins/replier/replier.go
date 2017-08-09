@@ -49,6 +49,9 @@ func Register(session *service.Session) {
 
 }
 func autoReply(session *service.Session, msg *service.ReceivedMessage) {
+	if msg.IsBot(session) {
+		return
+	}
 	uri := fmt.Sprintf("http://api.qingyunke.com/api.php?key=free&appid=0&msg=%s", url.QueryEscape(msg.Content))
 	resp, err := http.Get(uri)
 	if err != nil {

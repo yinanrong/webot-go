@@ -15,13 +15,14 @@ type HandlerWrapper struct {
 	name    string
 }
 type ExecuteContext struct {
-	Session *Session
-	Msg     *ReceivedMessage
+	Session    *Session
+	ReceiveMsg *ReceivedMessage
+	SendMsg    []byte
 }
 type Pipeline struct {
 	Context *ExecuteContext
 	Next    chan *ExecuteContext
-	Run     func(*ExecuteContext) *ExecuteContext
+	Run     func(*ExecuteContext) error
 }
 
 // Run: message handler callback

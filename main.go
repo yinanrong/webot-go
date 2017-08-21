@@ -1,6 +1,8 @@
 package main
 
 import (
+	"encoding/base64"
+	"fmt"
 	"net/http"
 	"strconv"
 	"time"
@@ -49,10 +51,10 @@ func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Se
 		}
 		sessChan <- session
 		sessMap[session.ID] = session
-		// w.Header().Add("Content-Type", "application/json")
-		// base64Qr := base64.StdEncoding.EncodeToString(qr)
-		// w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
-		w.Write(qr)
+		w.Header().Add("Content-Type", "application/json")
+		base64Qr := base64.StdEncoding.EncodeToString(qr)
+		w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
+		//w.Write(qr)
 	}).Methods("GET")
 	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)

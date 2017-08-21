@@ -246,15 +246,7 @@ func (s *Session) consumer(msg []byte) {
 	msgis, _ := jc.GetInterfaceSlice("AddMsgList")
 	for _, v := range msgis {
 		rmsg := s.analize(v.(map[string]interface{}))
-		if rmsg.MsgType == MSG_LINK || rmsg.MsgType == MSG_INIT {
-			logs.Warn("类型为%d的消息被忽略，消息内容:[%s]", rmsg.MsgType, rmsg.Content)
-			continue
-		}
-		handles, err := s.HandlerRegister.Get(rmsg.MsgType)
-		if err != nil {
-			logs.Warn(err)
-			continue
-		}
+		handles := s.HandlerRegister.Get(rmsg.MsgType)
 		for _, v := range handles {
 			go v.Run(s, rmsg)
 		}

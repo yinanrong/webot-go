@@ -14,16 +14,6 @@ type HandlerWrapper struct {
 	enabled bool
 	name    string
 }
-type ExecuteContext struct {
-	Session    *Session
-	ReceiveMsg *ReceivedMessage
-	SendMsg    []byte
-}
-type Pipeline struct {
-	Context *ExecuteContext
-	Next    chan *ExecuteContext
-	Run     func(*ExecuteContext) error
-}
 
 // Run: message handler callback
 func (s *HandlerWrapper) Run(session *Session, msg *ReceivedMessage) {
@@ -85,13 +75,13 @@ func (hr *HandlerRegister) Add(key int, h Handler, name string) error {
 }
 
 // Get: get message handler
-func (hr *HandlerRegister) Get(key int) ([]*HandlerWrapper, error) {
+func (hr *HandlerRegister) Get(key int) []*HandlerWrapper {
 	hr.mu.RLock()
 	defer hr.mu.RUnlock()
 	if v, ok := hr.hmap[key]; ok {
-		return v, nil
+		return v
 	}
-	return nil, fmt.Errorf("handlers for key [%d] not registered", key)
+	return []*HandlerWrapper{}
 }
 
 // GetAll: get all message handler
@@ -107,10 +97,7 @@ func (hr *HandlerRegister) GetAll() []*HandlerWrapper {
 
 // EnableByType: enable handler by message type
 func (hr *HandlerRegister) EnableByType(key int) error {
-	handles, err := hr.Get(key)
-	if err != nil {
-		return err
-	}
+	handles := hr.Get(key)
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
 	// all
@@ -122,10 +109,7 @@ func (hr *HandlerRegister) EnableByType(key int) error {
 
 // DisableByType: disable handler by message type
 func (hr *HandlerRegister) DisableByType(key int) error {
-	handles, err := hr.Get(key)
-	if err != nil {
-		return err
-	}
+	handles := hr.Get(key)
 	hr.mu.Lock()
 	defer hr.mu.Unlock()
 	// all

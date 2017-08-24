@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -38,22 +37,18 @@ func main() {
 }
 func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Session) {
 	r := mux.NewRouter()
+
 	r.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
 		session, err := service.CreateSession(nil, nil)
 		if err != nil {
 			logs.Error(err)
 			return
 		}
-		qr, err := session.GenerateQR()
-		if err != nil {
-			logs.Error(err)
-			return
-		}
+
 		sessChan <- session
 		sessMap[session.ID] = session
 		w.Header().Add("Content-Type", "application/json")
-		base64Qr := base64.StdEncoding.EncodeToString(qr)
-		w.Write([]byte(fmt.Sprintf(`{"uuid":"%s","qr":"%s"}`, session.ID, base64Qr)))
+		fmt.Fprintf(w, `{"uuid":"%s","qr":"%s"}`, session.ID, session.Qr())
 		//w.Write(qr)
 	}).Methods("GET")
 	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
@@ -71,10 +66,7 @@ func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Se
 
 func backService(session *service.Session, sessMap map[string]*service.Session) {
 	replier.Register(session)
-	//youdao.Register(session)
 	verify.Register(session)
-
-	// session.HandlerRegister.EnableByName("youdao")
 	session.HandlerRegister.EnableByName("text-replier")
 	session.HandlerRegister.EnableByName("verify")
 	if err := session.LoginAndServe(); err != nil {

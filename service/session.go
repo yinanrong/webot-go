@@ -85,8 +85,8 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister) (*Session, 
 }
 
 //GenerateQR generate QRCode for current session
-func (s *Session) GenerateQR() ([]byte, error) {
-	return QrCode(s.WxWebCommon, s.ID)
+func (s *Session) Qr() string {
+	return fmt.Sprintf("%s/qrcode/%s", s.WxWebCommon.LoginUrl, s.ID)
 }
 
 func (s *Session) analizeVersion(uri string) {

@@ -1,0 +1,49 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>西风白马啸微信机器人</title>
+		<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+		
+	</head>
+	<body>
+		<div id="img-box">
+			<img src="qr.jpg" id="img" style="height: 301px; width: 301px; margin-left: calc(50% - 100px); margin-top: 100px;"/>
+		</div>
+		<div style="width: 100%; margin-top: 50px; text-align: center; font-size: 17px;" id="text">请使用微信扫描二维码</div>
+		<script type="text/javascript">
+			axios.get("api/qr").then(function(data) {
+				var imgBox = document.getElementById("img-box");
+				var img = document.getElementById("img");
+				img.src = "data:image/png;base64,"+data.data.qr;
+				var interval = setInterval(function() {
+					axios.get("api/qr/"+data.data.uuid).then(function(res) {
+						
+						if(res.data == 408 || res.data == 500 || res.data == 600 || res.data == 200) {
+							clearInterval(interval);
+							switch(res.data) {
+								case 200:
+									document.getElementById("text").innerHTML = "<font color='green'>登录成功</font>";
+									break;
+								case 201:
+									document.getElementById("text").innerHTML = "请在微信上点击确认";
+									break;
+								case 408:
+									document.getElementById("text").innerHTML = "<font color='red'>扫码超时</font>";
+									break;
+								case 500:
+									document.getElementById("text").innerHTML = "<font color='red'>会话失败</font>";
+									break;
+								case 600:
+									document.getElementById("text").innerHTML = "<font color='red'>已登出</font>";
+									break;
+							}
+						}
+					});
+				}, 600);
+			}).catch(function(err) {
+		        alert(err);
+		    })
+		</script>
+	</body>
+</html>

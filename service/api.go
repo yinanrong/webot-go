@@ -47,21 +47,6 @@ func JsLogin(common *Common) (string, error) {
 	return ss[1], nil
 }
 
-// QrCode  qrcode
-func QrCode(common *Common, uuid string) ([]byte, error) {
-	km := url.Values{}
-	km.Add("t", "webwx")
-	km.Add("_", strconv.FormatInt(time.Now().Unix(), 10))
-	uri := common.LoginUrl + "/qrcode/" + uuid + "?" + km.Encode()
-	resp, err := http.Post(uri, "application/octet-stream", nil)
-	if err != nil {
-		return nil, err
-	}
-	defer resp.Body.Close()
-	body, _ := ioutil.ReadAll(resp.Body)
-	return body, nil
-}
-
 // Login  api
 func Login(common *Common, uuid, tip string) (string, error) {
 	km := url.Values{}

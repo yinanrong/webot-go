@@ -13,9 +13,10 @@ import (
 	"github.com/songtianyi/rrframework/logs"
 )
 
-func main() {
+func main1() {
 	sessMap := make(map[string]*service.Session)
 	sessChan := make(chan (*service.Session), 100)
+	service.InitSessVector(sessMap, sessChan)
 	go apiService(sessChan, sessMap)
 
 	go func() {

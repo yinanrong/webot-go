@@ -23,6 +23,10 @@ const (
 )
 
 var (
+	SessMap  map[string]*Session
+	SessChan chan *Session
+)
+var (
 	// DefaultCommon  default session config
 	DefaultCommon = &Common{
 		AppId:      "wx782c26e4c19acffb",
@@ -35,6 +39,11 @@ var (
 		MediaCount: 0,
 	}
 )
+
+func InitSessVector(sessMap map[string]*Session, sessChan chan *Session) {
+	SessMap = sessMap
+	SessChan = sessChan
+}
 
 // Session  wechat bot session
 type Session struct {
@@ -87,6 +96,11 @@ func CreateSession(common *Common, handlerRegister *HandlerRegister) (*Session, 
 //GenerateQR generate QRCode for current session
 func (s *Session) Qr() string {
 	return fmt.Sprintf("%s/qrcode/%s", s.WxWebCommon.LoginUrl, s.ID)
+}
+
+func (s *Session) EnQueue() {
+	SessChan <- s
+	SessMap[s.ID] = s
 }
 
 func (s *Session) analizeVersion(uri string) {

@@ -18,9 +18,7 @@ func (c HomeController) qr(w http.ResponseWriter, r *http.Request) {
 		logs.Error(err)
 		return
 	}
-
-	sessChan <- session
-	sessMap[session.ID] = session
+	session.EnQueue()
 	w.Header().Add("Content-Type", "application/json")
 	fmt.Fprintf(w, `{"uuid":"%s","qr":"%s"}`, session.ID, session.Qr())
 }

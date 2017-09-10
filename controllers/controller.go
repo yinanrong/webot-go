@@ -46,6 +46,10 @@ func (*controller) setHead(w http.ResponseWriter) {
 	header.Set("Content-Type", "application/json")
 }
 
+func (*controller) View(view string, w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, views+view)
+}
+
 type ErrorResponse struct {
 	Code        string `json:"code"`
 	Description string `json:"description"`

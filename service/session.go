@@ -23,8 +23,8 @@ const (
 )
 
 var (
-	SessMap  map[string]*Session
-	SessChan chan *Session
+	_sessMap  map[string]*Session
+	_sessChan chan *Session
 )
 var (
 	// DefaultCommon  default session config
@@ -41,8 +41,13 @@ var (
 )
 
 func InitSessVector(sessMap map[string]*Session, sessChan chan *Session) {
-	SessMap = sessMap
-	SessChan = sessChan
+	_sessMap = sessMap
+	_sessChan = sessChan
+}
+
+func SessionPop(uuid string) (*Session, bool) {
+	sess, ok := _sessMap[uuid]
+	return sess, ok
 }
 
 // Session  wechat bot session
@@ -99,8 +104,8 @@ func (s *Session) Qr() string {
 }
 
 func (s *Session) EnQueue() {
-	SessChan <- s
-	SessMap[s.ID] = s
+	_sessChan <- s
+	_sessMap[s.ID] = s
 }
 
 func (s *Session) analizeVersion(uri string) {

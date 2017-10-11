@@ -12,12 +12,12 @@ const (
 
 type controller struct {
 	Name string
-	mux  map[string]http.Handler
+	mux  map[string]func(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if h, ok := c.mux[r.URL.Path]; ok {
-		h.ServeHTTP(w, r)
+		h(w, r)
 		return
 	}
 	http.ServeFile(w, r, "../views/notfound.html")
@@ -25,14 +25,14 @@ func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (c *controller) BadRequest(w http.ResponseWriter, msg interface{}) {
 	c.setHead(w)
 	w.WriteHeader(400)
-	jerr, _ := json.Marshal(msg)
-	w.Write(jerr)
+	json, _ := json.Marshal(msg)
+	w.Write(json)
 }
 func (c *controller) StatusCode(w http.ResponseWriter, code int, msg interface{}) {
 	c.setHead(w)
 	w.WriteHeader(code)
-	jerr, _ := json.Marshal(msg)
-	w.Write(jerr)
+	json, _ := json.Marshal(msg)
+	w.Write(json)
 }
 func (c *controller) OK(w http.ResponseWriter, model interface{}) {
 	c.setHead(w)

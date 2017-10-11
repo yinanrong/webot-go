@@ -14,6 +14,12 @@ type HomeController struct {
 	controller
 }
 
+func NewHomeController() *HomeController {
+	h := new(HomeController)
+	h.mux[h.Name+"/qr"] = h.qr
+	h.mux[h.Name+"/state"] = h.state
+	return h
+}
 func (c *HomeController) qr(w http.ResponseWriter, r *http.Request) {
 	session, err := service.CreateSession(nil, nil)
 	if err != nil {

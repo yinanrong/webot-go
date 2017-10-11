@@ -15,6 +15,13 @@ type controller struct {
 	mux  map[string]http.Handler
 }
 
+func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if h, ok := c.mux[r.URL.Path]; ok {
+		h.ServeHTTP(w, r)
+		return
+	}
+	http.ServeFile(w, r, "../views/notfound.html")
+}
 func (c *controller) BadRequest(w http.ResponseWriter, msg interface{}) {
 	c.setHead(w)
 	w.WriteHeader(400)
@@ -33,7 +40,7 @@ func (c *controller) OK(w http.ResponseWriter, model interface{}) {
 	if kind == reflect.Struct || kind == reflect.Array || kind == reflect.Slice || kind == reflect.Chan || kind == reflect.Map {
 		json, err := json.Marshal(model)
 		if err != nil {
-			c.BadRequest(w, NewErrorResponse("unkown error", err.Error()))
+			c.BadRequest(w, err.Error())
 		} else {
 			w.Write(json)
 		}
@@ -48,13 +55,4 @@ func (*controller) setHead(w http.ResponseWriter) {
 
 func (*controller) View(view string, w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, views+view)
-}
-
-type ErrorResponse struct {
-	Code        string `json:"code"`
-	Description string `json:"description"`
-}
-
-func NewErrorResponse(code string, description string) ErrorResponse {
-	return ErrorResponse{code, description}
 }

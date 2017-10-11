@@ -15,16 +15,16 @@ type controller struct {
 	mux  map[string]http.Handler
 }
 
-func (c *controller) BadRequest(w http.ResponseWriter, err ErrorResponse) {
+func (c *controller) BadRequest(w http.ResponseWriter, msg interface{}) {
 	c.setHead(w)
 	w.WriteHeader(400)
-	jerr, _ := json.Marshal(err)
+	jerr, _ := json.Marshal(msg)
 	w.Write(jerr)
 }
-func (c *controller) StatusCode(w http.ResponseWriter, code int, err *ErrorResponse) {
+func (c *controller) StatusCode(w http.ResponseWriter, code int, msg interface{}) {
 	c.setHead(w)
 	w.WriteHeader(code)
-	jerr, _ := json.Marshal(err)
+	jerr, _ := json.Marshal(msg)
 	w.Write(jerr)
 }
 func (c *controller) OK(w http.ResponseWriter, model interface{}) {

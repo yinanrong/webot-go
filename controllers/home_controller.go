@@ -18,6 +18,7 @@ func (c *HomeController) qr(w http.ResponseWriter, r *http.Request) {
 	session, err := service.CreateSession(nil, nil)
 	if err != nil {
 		logs.Error(err)
+		c.BadRequest(w, err)
 		return
 	}
 	session.EnQueue()

@@ -1,15 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
 	"time"
+	"webot-go/controllers"
 	"webot-go/plugins/replier"
 	"webot-go/plugins/verify"
 	"webot-go/service"
 
-	"github.com/gorilla/mux"
 	"github.com/songtianyi/rrframework/logs"
 )
 
@@ -37,32 +35,31 @@ func main() {
 	select {}
 }
 func apiService(sessChan chan<- *service.Session, sessMap map[string]*service.Session) {
-	r := mux.NewRouter()
+	// r.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
+	// 	session, err := service.CreateSession(nil, nil)
+	// 	if err != nil {
+	// 		logs.Error(err)
+	// 		return
+	// 	}
 
-	r.HandleFunc("/qr", func(w http.ResponseWriter, r *http.Request) {
-		session, err := service.CreateSession(nil, nil)
-		if err != nil {
-			logs.Error(err)
-			return
-		}
+	// 	sessChan <- session
+	// 	sessMap[session.ID] = session
+	// 	w.Header().Add("Content-Type", "application/json")
+	// 	fmt.Fprintf(w, `{"uuid":"%s","qr":"%s"}`, session.ID, session.Qr())
+	// 	//w.Write(qr)
+	// }).Methods("GET")
+	// r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
+	// 	vars := mux.Vars(r)
+	// 	if uuid, ok := vars["uuid"]; ok {
+	// 		if session, ok := sessMap[uuid]; ok {
+	// 			w.Write([]byte(strconv.Itoa(session.State)))
+	// 		} else {
+	// 			w.Write([]byte(strconv.Itoa(service.Closed)))
+	// 		}
+	// 	}
+	// }).Methods("GET")
 
-		sessChan <- session
-		sessMap[session.ID] = session
-		w.Header().Add("Content-Type", "application/json")
-		fmt.Fprintf(w, `{"uuid":"%s","qr":"%s"}`, session.ID, session.Qr())
-		//w.Write(qr)
-	}).Methods("GET")
-	r.HandleFunc("/qr/{uuid}", func(w http.ResponseWriter, r *http.Request) {
-		vars := mux.Vars(r)
-		if uuid, ok := vars["uuid"]; ok {
-			if session, ok := sessMap[uuid]; ok {
-				w.Write([]byte(strconv.Itoa(session.State)))
-			} else {
-				w.Write([]byte(strconv.Itoa(service.Closed)))
-			}
-		}
-	}).Methods("GET")
-	http.ListenAndServe(":5001", r)
+	http.ListenAndServe(":5001/home", new(controllers.HomeController))
 }
 
 func backService(session *service.Session, sessMap map[string]*service.Session) {

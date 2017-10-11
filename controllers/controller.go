@@ -15,6 +15,13 @@ type controller struct {
 	mux  map[string]http.Handler
 }
 
+func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if h, ok := c.mux[r.URL.Path]; ok {
+		h.ServeHTTP(w, r)
+		return
+	}
+	http.ServeFile(w, r, "../views/notfound.html")
+}
 func (c *controller) BadRequest(w http.ResponseWriter, err ErrorResponse) {
 	c.setHead(w)
 	w.WriteHeader(400)

@@ -16,9 +16,16 @@ type HomeController struct {
 
 func NewHomeController() *HomeController {
 	h := new(HomeController)
-	h.mux[h.Name+"/qr"] = h.qr
-	h.mux[h.Name+"/state"] = h.state
+	if h.mux == nil {
+		h.mux = make(map[string]func(w http.ResponseWriter, r *http.Request))
+	}
+	h.mux["/index"] = h.index
+	h.mux["/qr"] = h.qr
+	h.mux["/state"] = h.state
 	return h
+}
+func (c *HomeController) index(w http.ResponseWriter, r *http.Request) {
+	c.View("index.html", w, r)
 }
 func (c *HomeController) qr(w http.ResponseWriter, r *http.Request) {
 	session, err := service.CreateSession(nil, nil)

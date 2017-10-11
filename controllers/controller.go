@@ -7,20 +7,18 @@ import "encoding/json"
 import "reflect"
 
 const (
-	views = "../views/"
+	views = "/views"
 )
 
 type controller struct {
-	Name string
-	mux  map[string]func(w http.ResponseWriter, r *http.Request)
+	mux map[string]func(w http.ResponseWriter, r *http.Request)
 }
 
 func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if h, ok := c.mux[r.URL.Path]; ok {
 		h(w, r)
-		return
 	}
-	http.ServeFile(w, r, "../views/notfound.html")
+	http.ServeFile(w, r, "notfound.html")
 }
 func (c *controller) BadRequest(w http.ResponseWriter, msg interface{}) {
 	c.setHead(w)
@@ -54,5 +52,7 @@ func (*controller) setHead(w http.ResponseWriter) {
 }
 
 func (*controller) View(view string, w http.ResponseWriter, r *http.Request) {
-	http.ServeFile(w, r, views+view)
+	url := fmt.Sprintf("%s/%s", views, view)
+	fmt.Println(url)
+	http.ServeFile(w, r, url)
 }

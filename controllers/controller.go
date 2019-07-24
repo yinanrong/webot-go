@@ -6,10 +6,6 @@ import "fmt"
 import "encoding/json"
 import "reflect"
 
-const (
-	views = "./views"
-)
-
 type controller struct {
 	mux map[string]func(w http.ResponseWriter, r *http.Request)
 }
@@ -19,7 +15,7 @@ func (c *controller) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		h(w, r)
 		return
 	}
-	c.NotFound(w)
+	c.NotFound(w, r)
 }
 func (c *controller) BadRequest(w http.ResponseWriter, msg interface{}) {
 	c.setHead(w)
@@ -52,12 +48,12 @@ func (*controller) setHead(w http.ResponseWriter) {
 	header.Set("Content-Type", "application/json")
 }
 
-func (*controller) View(view string, w http.ResponseWriter, r *http.Request) {
-	url := fmt.Sprintf("%s/%s", views, view)
-	http.ServeFile(w, r, url)
+func (*controller) View(content string, w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+	w.Write([]byte(content))
 }
 
-func (*controller) NotFound(w http.ResponseWriter) {
+func (*controller) NotFound(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(404)
-	w.Write([]byte("请求的页面不存在"))
+	w.Write([]byte("请求的地址" + r.URL.Path + "不存在"))
 }
